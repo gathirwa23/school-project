@@ -7,9 +7,12 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node backend/server.js",
+    "dev": "nodemon server.js",
+    "seed:products": "node seedProducts.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "data:import": "node backend/seedProducts.js",
+  "data:destroy": "node backend/seedProducts.js -d"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",

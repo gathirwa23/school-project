@@ -39,7 +39,10 @@ function Signup() {
 
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
-      navigate('/dashboard')
+
+      const nextRole = (data?.user?.role || '').toLowerCase()
+      if (nextRole === 'user') navigate('/user-dashboard')
+      else navigate('/dashboard')
     } catch (err) {
       setError(err.message)
     } finally {
