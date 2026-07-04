@@ -1,0 +1,12 @@
+- [x] Inspect current transaction/discount data models (orders/discounts) in backend
+- [x] Add backend endpoints:
+  - [x] PATCH /api/orders/:id/status for driver/owner status updates
+  - [x] POST /api/discounts/:id/approve for owner discount approval
+- [x] Update backend controllers and routes accordingly
+- [x] Update frontend Transactions UI in Dashboard.jsx to:
+  - [x] Load real transaction list
+  - [x] Allow driver/owner to update transaction status
+  - [x] Allow owner to approve pending discounts
+- [ ] Test manually via browser/postman
+- [ ] Run frontend build/lint if available
+
