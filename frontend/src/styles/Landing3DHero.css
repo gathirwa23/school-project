@@ -1,0 +1,81 @@
+.landing-hero{
+  position: relative;
+}
+
+.landing-hero-3d{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.landing-hero-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.landing-hero-3d-overlay{
+  position:absolute;
+  inset:0;
+  background: radial-gradient(circle at 20% 10%, rgba(59,109,17,0.14), transparent 45%),
+              radial-gradient(circle at 80% 20%, rgba(200,168,112,0.12), transparent 45%),
+              radial-gradient(circle at 50% 80%, rgba(163,45,45,0.10), transparent 50%);
+  mix-blend-mode: multiply;
+}
+
+.landing-hero-3d-card{
+  position:absolute;
+  left: 50%;
+  top: 54%;
+  transform: translate(-50%, -50%);
+  width: min(520px, 92vw);
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.45);
+  border: 1px solid rgba(237,224,206,0.7);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 26px 70px rgba(0,0,0,0.10);
+
+  /* subtle 3D tilt */
+  transform-style: preserve-3d;
+  animation: heroFloat 7s ease-in-out infinite;
+}
+
+@keyframes heroFloat{
+  0%,100%{ transform: translate(-50%, -50%) rotateX(10deg) rotateY(-12deg); }
+  50%{ transform: translate(-50%, -50%) rotateX(12deg) rotateY(-6deg); }
+}
+
+.landing-hero-3d-logo{
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.10);
+  border: 1px solid rgba(237,224,206,0.85);
+  margin-right: 14px;
+}
+
+.landing-hero-3d-card{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+}
+
+.landing-hero-3d-title{
+  font-size: 22px;
+  font-weight: 900;
+  color:#2b2b2b;
+  letter-spacing:0.2px;
+}
+
+.landing-hero-3d-sub{
+  margin-top: 4px;
+  color:#6a5a4b;
+  font-weight:700;
+  font-size: 13px;
+}
+

@@ -124,11 +124,17 @@ function TransactionsPanel({ user }) {
   }
 
   async function approveDiscount(discountId) {
+    // Prevent double-approvals from rapid multiple clicks.
+    if (!discountId) return
+    setDiscountsError('')
+
+    // If we are already loading, ignore extra clicks.
+    // (Still safe even if called from multiple places.)
+    if (discountsLoading) return
+
     try {
-      setDiscountsError('')
       setDiscountsSuccess('')
       setDiscountsLoading(true)
-
 
       const res = await fetch(`http://localhost:5000/api/discounts/${discountId}/approve`, {
         method: 'POST',
@@ -145,16 +151,31 @@ function TransactionsPanel({ user }) {
 
       const updated = await res.json().catch(() => ({}))
 
-      // Positive message + ensure table refreshes from backend truth
-      if (updated?.message) {
-        setDiscountsSuccess(updated.message)
-      } else {
-        setDiscountsSuccess('✅ Discount approved successfully')
-      }
+      // TEMP DEBUG (remove later): verify response shape
+      console.log('approveDiscount response:', { updated, discountId })
+      console.log('discounts before update:', discounts)
 
-      // Refresh discounts so status changes from pending -> approved immediately
+      if (updated?.message) setDiscountsSuccess(updated.message)
+      else setDiscountsSuccess('✅ Discount approved successfully')
+
+      // Optimistic UI: update this discount's status immediately
+      setDiscounts((prev) => {
+        // Some rows might use different id keys; try id then fallback to discount_id
+        return prev.map((d) => {
+          const rowId = d?.id ?? d?.discount_id
+          return String(rowId) === String(discountId) ? { ...d, status: 'approved' } : d
+        })
+      })
+
+      // Also update the related transaction row if present (keeps both UI sections in sync)
+      setTransactions((prev) => {
+        const relatedTxId = updated?.discount?.transaction_id ?? updated?.discount?.order_id
+        if (!relatedTxId) return prev
+        return prev.map((t) => (String(t.id) === String(relatedTxId) ? { ...t, status: 'approved' } : t))
+      })
+
       await refreshDiscounts()
-
+      await refreshTransactions()
     } catch (e) {
       console.error(e)
       setDiscountsError(e.message || 'Failed to approve discount')
@@ -163,6 +184,22 @@ function TransactionsPanel({ user }) {
     }
   }
 
+
+  async function refreshTransactions() {
+    if (!((isOwner || isDriver) && token)) return
+
+    try {
+      const txRes = await fetch('http://localhost:5000/api/transactions', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!txRes.ok) throw new Error('Failed to fetch transactions')
+      const txData = await txRes.json()
+      setTransactions(txData.transactions || [])
+    } catch (e) {
+      console.error('refreshTransactions error:', e)
+      setTxError(e.message || 'Failed to refresh transactions')
+    }
+  }
 
   async function refreshDiscounts() {
     if (!isOwner || !token) return
@@ -185,8 +222,10 @@ function TransactionsPanel({ user }) {
     }
   }
 
-  const pendingDiscounts = useMemo(() => {
-    return discounts.filter((d) => String(d.status || '').toLowerCase() === 'pending')
+  // Show all discounts so the status pill can update from pending -> approved
+  // immediately after the owner clicks Approve.
+  const visibleDiscounts = useMemo(() => {
+    return discounts || []
   }, [discounts])
 
   if (loading) return <div className="bottom">Loading...</div>
@@ -357,14 +396,14 @@ function TransactionsPanel({ user }) {
               </tr>
             </thead>
             <tbody>
-              {pendingDiscounts.length === 0 ? (
+              {visibleDiscounts.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ opacity: 0.8 }}>
-                    No pending discounts.
+                    No discounts.
                   </td>
                 </tr>
               ) : (
-                pendingDiscounts.map((d) => {
+                visibleDiscounts.map((d) => {
                   const value = d.value ?? d.amount ?? d.discount_amount ?? ''
                   return (
                     <tr key={d.id}>

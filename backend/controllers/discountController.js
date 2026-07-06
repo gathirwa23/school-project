@@ -118,17 +118,45 @@ async function approveDiscount(req, res) {
 
     const { data: existing, error: existingErr } = await supabaseAdmin
       .from('discount auth')
-      .select('id, original price')
+      .select('id, original price, approved at, approved price, order_id, transaction_id')
       .eq('id', id)
       .maybeSingle()
 
     if (existingErr) throw existingErr
     if (!existing) return res.status(404).json({ message: 'Discount not found' })
 
+    // Idempotency: if already approved, return the stored record and do not re-update.
+    const alreadyApprovedAt = existing?.['approved at'] ?? existing?.approved_at ?? existing?.approvedAt ?? null
+    if (alreadyApprovedAt) {
+      const approvedPriceExisting =
+        existing?.['approved price'] ?? existing?.approved_price ?? existing?.approvedPrice ?? null
+
+      return res.json({
+        discount: {
+          ...existing,
+          status: 'approved',
+          value:
+            existing?.['original price'] ??
+            existing?.original_price ??
+            existing?.originalPrice ??
+            existing?.value ??
+            existing?.amount ??
+            null,
+          customer_id:
+            existing?.customer_id ??
+            existing?.user_id ??
+            existing?.customer ??
+            existing?.customerId ??
+            null,
+          approved_price: approvedPriceExisting,
+        },
+        message: '✅ Discount already approved',
+      })
+    }
+
     const original = existing?.['original price']
     const finalApprovedPrice = approvedPriceValue ?? original ?? null
     const finalApprovedAt = serverApprovedAt
-
 
     const { data, error } = await supabaseAdmin
       .from('discount auth')
@@ -142,13 +170,30 @@ async function approveDiscount(req, res) {
     if (error) throw error
     if (!data || !data.length) return res.status(404).json({ message: 'Discount not found' })
 
+    // If your `discount auth` row is linked to an order/transaction,
+    // update the corresponding order status so the Transactions table button shows `approved`.
+    const discountRow = data[0]
+    const linkedOrderId =
+      discountRow.order_id ??
+      discountRow.transaction_id ??
+      discountRow.orderId ??
+      discountRow.transactionId ??
+      null
+
+    if (linkedOrderId) {
+      await supabaseAdmin
+        .from('order')
+        .update({ status: 'approved' })
+        .eq('id', linkedOrderId)
+    }
+
     const approved = {
-      ...data[0],
+      ...discountRow,
       status: 'approved',
       // normalize for UI consistency with listIssuedDiscounts
-      value: data[0]['original price'] ?? data[0].original_price ?? data[0].originalPrice ?? data[0].value ?? data[0].amount ?? null,
+      value: discountRow['original price'] ?? discountRow.original_price ?? discountRow.originalPrice ?? discountRow.value ?? discountRow.amount ?? null,
       customer_id:
-        data[0].customer_id ?? data[0].user_id ?? data[0].customer ?? data[0].customerId ?? null,
+        discountRow.customer_id ?? discountRow.user_id ?? discountRow.customer ?? discountRow.customerId ?? null,
     }
 
     return res.json({

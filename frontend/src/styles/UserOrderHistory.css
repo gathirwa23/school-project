@@ -1,0 +1,92 @@
+.order-history-wrapper{
+  position: relative;
+}
+
+.order-history-btn{
+  background: #FAF6EE;
+  border: 0.5px solid #C4B49A;
+  color: #6B5040;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.order-history-btn:hover{
+  background: #F5F0E8;
+}
+
+.order-history-panel{
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #FFFDF8;
+  border: 0.5px solid #C4B49A;
+  border-radius: 12px;
+  min-width: 420px;
+  max-width: 90vw;
+  max-height: 560px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 32px rgba(61, 43, 26, 0.15);
+  z-index: 1000;
+}
+
+.order-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  background: #F5F0E8;
+  border-radius: 8px;
+}
+
+.order-row-main{
+  flex: 1;
+  min-width: 0;
+}
+
+.order-row-name{
+  font-weight: 800;
+  color: #3D2B1A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-row-meta{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  color: #7A5C3A;
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.order-row-right{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.order-row-date{
+  font-size: 10px;
+  color: #8A7060;
+  font-weight: 600;
+  text-align: right;
+  max-width: 180px;
+}
+
+@media (max-width: 768px){
+  .order-history-panel{
+    min-width: 280px;
+    right: -10px;
+  }
+}
+

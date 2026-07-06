@@ -4,6 +4,29 @@
   padding: 0;
 }
 
+:root {
+  --app-bg: #F5F0E8;
+  --app-fg: #3D2B1A;
+  --card-bg: #FFFDF8;
+  --panel-bg: #FAF6EE;
+  --border: #C4B49A;
+  --border-soft: #EDE0CE;
+  --muted: #8A7060;
+  --accent: #7A5C3A;
+}
+
+html[data-theme='dark'] {
+  --app-bg: #1A1410;
+  --app-fg: #F3EBDD;
+  --card-bg: #231B16;
+  --panel-bg: #1F1A16;
+  --border: #3B2C22;
+  --border-soft: #34271E;
+  --muted: #B8A692;
+  --accent: #C8A870;
+}
+
+
 .layout {
   display: grid;
   grid-template-columns: 190px 1fr;
@@ -970,8 +993,16 @@ td input:focus {
   .mid {
     grid-template-columns: 1fr;
   }
-}
 
+  /* Reports */
+  .report-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .report-extra {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 768px) {
   .layout {
@@ -993,9 +1024,169 @@ td input:focus {
   .search-box {
     display: none;
   }
+
+  /* Reports header buttons wrap nicely */
+  .bottom .card-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .bottom .card-head > div {
+    flex-wrap: wrap;
+  }
+
+  /* Reports charts stack */
+  .report-content {
+    grid-template-columns: 1fr;
+  }
+
+  .bar-chart {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pie-wrap {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .pie {
+    width: 140px;
+    height: 140px;
+  }
+
+  .pie svg {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .bar-chart {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .report-charts {
+    gap: 12px;
+  }
+
+  .report-chart-card {
+    padding: 14px;
+  }
+
+  .report-extra {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* DARK MODE OVERRIDES (Dashboard + User Dashboard; uses CSS vars set in Dashboard.css header) */
+html[data-theme='dark'] .layout,
+html[data-theme='dark'] .user-dashboard {
+  background: var(--app-bg) !important;
+  color: var(--app-fg) !important;
+}
+
+html[data-theme='dark'] .sidebar,
+html[data-theme='dark'] .user-dashboard-header {
+  background: var(--accent) !important;
+  color: #0B0706 !important;
+}
+
+html[data-theme='dark'] .sb-title,
+html[data-theme='dark'] .sb-user-info p,
+html[data-theme='dark'] .sb-user-info span,
+html[data-theme='dark'] .nav-item,
+html[data-theme='dark'] .nav-item:hover,
+html[data-theme='dark'] .nav-item.active,
+html[data-theme='dark'] .logout-link {
+  color: var(--app-fg) !important;
+}
+
+html[data-theme='dark'] .nav-item.active {
+  background: var(--border-soft) !important;
+  border-right-color: var(--accent) !important;
+}
+
+html[data-theme='dark'] .bottom,
+html[data-theme='dark'] .card,
+html[data-theme='dark'] .stat-card,
+html[data-theme='dark'] .business-insights,
+html[data-theme='dark'] .report-chart-card,
+html[data-theme='dark'] .side-card,
+html[data-theme='dark'] .report-item {
+  background: var(--card-bg) !important;
+  border-color: var(--border-soft) !important;
+  color: var(--app-fg) !important;
+}
+
+html[data-theme='dark'] .card-title,
+html[data-theme='dark'] .stat-label,
+html[data-theme='dark'] .greeting,
+html[data-theme='dark'] .detail-label,
+html[data-theme='dark'] .detail-value,
+html[data-theme='dark'] .chart-title,
+html[data-theme='dark'] .chart-sub,
+html[data-theme='dark'] table th,
+html[data-theme='dark'] table td,
+html[data-theme='dark'] .pill,
+html[data-theme='dark'] .list-title,
+html[data-theme='dark'] .stat-val,
+html[data-theme='dark'] .stat-val-email,
+html[data-theme='dark'] .info-row,
+html[data-theme='dark'] .welcome-content p,
+html[data-theme='dark'] .line-xlabels,
+html[data-theme='dark'] .bar-label,
+html[data-theme='dark'] .bar-val {
+  color: var(--app-fg) !important;
+}
+
+
+html[data-theme='dark'] .btn-sm,
+html[data-theme='dark'] table .btn-sm {
+  background: transparent !important;
+  border-color: var(--border-soft) !important;
+  color: var(--app-fg) !important;
+}
+
+html[data-theme='dark'] .btn-sm:hover,
+html[data-theme='dark'] table .btn-sm:hover {
+  background: var(--panel-bg) !important;
+}
+
+html[data-theme='dark'] table thead th,
+html[data-theme='dark'] .search-box,
+html[data-theme='dark'] .user-dashboard-header {
+  border-color: var(--border-soft) !important;
+}
+
+html[data-theme='dark'] .search-box {
+  background: var(--panel-bg) !important;
+}
+
+html[data-theme='dark'] .search-input,
+html[data-theme='dark'] .search-input::placeholder,
+html[data-theme='dark'] .greeting em {
+  color: var(--app-fg) !important;
+}
+
+html[data-theme='dark'] .line-chart svg,
+html[data-theme='dark'] .bar-track,
+html[data-theme='dark'] .breakdown-bar,
+html[data-theme='dark'] .growth-track,
+html[data-theme='dark'] .line-xlabels {
+  background: rgba(0,0,0,0.15) !important;
+  border-color: var(--border-soft) !important;
+  color: var(--app-fg) !important;
 }
 
 .commerce-products {
+
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 14px;

@@ -117,11 +117,11 @@ async function checkoutOrders(req, res) {
     for (const item of normalized) {
       const row = invById.get(String(item.productId))
       const productName = row.name ?? row.product ?? String(item.productId)
-      const priceNum = typeof row.price === 'number' ? row.price : Number(row.price)
+      const unitPriceNum = typeof row.price === 'number' ? row.price : Number(row.price)
 
       const orderPayload = buildOrderRecord({
         productName,
-        price: priceNum,
+        price: unitPriceNum,
         quantity: item.quantity,
       })
 
@@ -136,7 +136,7 @@ async function checkoutOrders(req, res) {
         createdOrder = createLocalOrderRecord({
           userId: resolvedUserId,
           productName,
-          price: priceNum,
+          price: unitPriceNum,
           quantity: item.quantity,
         })
       } else if (orderInsert && orderInsert.length) {
@@ -147,6 +147,35 @@ async function checkoutOrders(req, res) {
 
       if (!createdOrder) throw new Error('Failed to create order')
       createdOrders.push(createdOrder)
+
+      // Record sale event (1 row per cart item / per created order line)
+      // Table: `sale event`
+      // Columns: sale_id, quantity, total amount
+
+      const saleId = createdOrder?.id || `local-sale-${Date.now()}-${Math.random().toString(16).slice(2)}`
+      const quantityNum = Number(item.quantity)
+      const unitPrice = Number(unitPriceNum)
+      const totalAmount = quantityNum * unitPrice
+      const saleTime = new Date().toISOString()
+
+      // Your `sale event` schema is: (sale_id, total amount, quantity)
+      // So we only insert those columns here.
+      const saleEventPayload = {
+        sale_id: saleId,
+        quantity: quantityNum,
+        'total amount': totalAmount,
+      }
+
+
+      const { error: saleEventErr } = await supabaseAdmin
+        .from('sales')
+        .insert(saleEventPayload)
+
+
+      if (saleEventErr) {
+        // Do not fail the entire checkout if sale-event recording fails.
+        console.warn('sale event insert failed:', saleEventErr.message)
+      }
 
       const localOrders = readLocalOrderHistory()
       const nextLocalOrders = [...localOrders, createdOrder].filter(Boolean)

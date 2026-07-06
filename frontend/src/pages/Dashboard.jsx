@@ -11,6 +11,8 @@ function Dashboard() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeSection, setActiveSection] = useState('dashboard')
+  const [theme, setTheme] = useState('light')
+
 
   const [discountNotificationsCount, setDiscountNotificationsCount] = useState(0)
 
@@ -40,13 +42,38 @@ function Dashboard() {
   }
 
   const reportData = {
-
     totalSales: 145000,
     unitsThisMonth: 342,
     discountsGiven: 12,
     shrinkage: 5,
   }
+
+  const [salesPeriod, setSalesPeriod] = useState('monthly') // 'weekly' | 'monthly'
+
+  const periodMultiplier = useMemo(() => {
+    // mock transformation so charts are clearly dynamic when clicking
+    // (replace with real backend data later)
+    return salesPeriod === 'weekly' ? 0.32 : 1
+  }, [salesPeriod])
+
+  const computedReportData = useMemo(() => {
+    const m = periodMultiplier
+    return {
+      totalSales: Math.round(reportData.totalSales * m),
+      unitsThisMonth: Math.round(reportData.unitsThisMonth * m),
+      discountsGiven: Math.max(0, Math.round(reportData.discountsGiven * (m + 0.05))),
+      shrinkage: Math.max(0, Math.round(reportData.shrinkage * (m + 0.02))),
+    }
+  }, [periodMultiplier, reportData])
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme')
+    const nextTheme = savedTheme === 'dark' ? 'dark' : 'light'
+    document.documentElement.setAttribute('data-theme', nextTheme)
+    setTheme(nextTheme)
+  }, [])
+
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -54,6 +81,7 @@ function Dashboard() {
       navigate('/login')
       return
     }
+
 
     async function fetchUser() {
       try {
@@ -721,8 +749,22 @@ function Dashboard() {
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Theme:</span>
-                  <span className="detail-value">Default</span>
+                  <span className="detail-value">
+                    <button
+                      className="btn-sm"
+                      onClick={() => {
+                        const next = theme === 'dark' ? 'light' : 'dark'
+                        setTheme(next)
+                        localStorage.setItem('theme', next)
+                        document.documentElement.setAttribute('data-theme', next)
+                      }}
+                      type="button"
+                    >
+                      {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+                    </button>
+                  </span>
                 </div>
+
                 <div className="detail-row">
                   <span className="detail-label">Security:</span>
                   <span className="detail-value">
@@ -896,16 +938,48 @@ function Dashboard() {
             <div className="bottom">
               <div className="card-head">
                 <span className="card-title">Sales Report</span>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button className="btn-sm">📊 Weekly</button>
-                  <button className="btn-sm">📊 Monthly</button>
-                  <button className="btn-sm">📥 Download</button>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    className={`btn-sm ${salesPeriod === 'weekly' ? 'btn-sm-active' : ''}`}
+                    onClick={() => setSalesPeriod('weekly')}
+                    type="button"
+                  >
+                    📊 Weekly
+                  </button>
+                  <button
+                    className={`btn-sm ${salesPeriod === 'monthly' ? 'btn-sm-active' : ''}`}
+                    onClick={() => setSalesPeriod('monthly')}
+                    type="button"
+                  >
+                    📊 Monthly
+                  </button>
+                  <button
+                    className="btn-sm"
+                    type="button"
+                    onClick={() => {
+                      // Print hard copy of the report as currently shown.
+                      // Uses a dedicated print container so the page isn't cluttered.
+                      const el = document.getElementById('sales-report-print')
+                      if (!el) {
+                        window.print()
+                        return
+                      }
+
+                      const prev = document.body.innerHTML
+                      document.body.innerHTML = el.outerHTML
+                      window.print()
+                      document.body.innerHTML = prev
+                      window.location.reload()
+                    }}
+                  >
+                    📥 Download
+                  </button>
                 </div>
               </div>
 
               {/* CHARTS */}
               <div className="report-charts">
-                <div className="report-chart-card">
+                  <div className="report-chart-card" id="sales-report-print">
                   <div className="chart-head">
                     <span className="chart-title">Performance & Growth</span>
                     <span className="chart-sub">Owner metrics + visual progress</span>
@@ -961,19 +1035,19 @@ function Dashboard() {
                   </div>
 
                   {(() => {
-                    const maxVal = Math.max(
-                      reportData.totalSales,
-                      reportData.unitsThisMonth,
-                      reportData.discountsGiven,
-                      reportData.shrinkage,
+                      const maxVal = Math.max(
+                      computedReportData.totalSales,
+                      computedReportData.unitsThisMonth,
+                      computedReportData.discountsGiven,
+                      computedReportData.shrinkage,
                       1
                     )
 
                     const items = [
-                      { label: 'Total Sales', value: reportData.totalSales, display: `KSh ${reportData.totalSales.toLocaleString()}` },
-                      { label: 'Units Sold', value: reportData.unitsThisMonth, display: `${reportData.unitsThisMonth}` },
-                      { label: 'Discounts', value: reportData.discountsGiven, display: `${reportData.discountsGiven}` },
-                      { label: 'Shrinkage', value: reportData.shrinkage, display: `${reportData.shrinkage} units` },
+                      { label: 'Total Sales', value: computedReportData.totalSales, display: `KSh ${computedReportData.totalSales.toLocaleString()}` },
+                      { label: 'Units Sold', value: computedReportData.unitsThisMonth, display: `${computedReportData.unitsThisMonth}` },
+                      { label: 'Discounts', value: computedReportData.discountsGiven, display: `${computedReportData.discountsGiven}` },
+                      { label: 'Shrinkage', value: computedReportData.shrinkage, display: `${computedReportData.shrinkage} units` },
                     ]
 
                     return (
@@ -1007,12 +1081,12 @@ function Dashboard() {
                     <div className="breakdown-row">
                       <span>Total Revenue</span>
                       <div className="breakdown-right">
-                        <span className="breakdown-val">KSh {reportData.totalSales.toLocaleString()}</span>
+                        <span className="breakdown-val">KSh {computedReportData.totalSales.toLocaleString()}</span>
                         <div className="breakdown-bar">
-                          <div
+                              <div
                             className="breakdown-fill"
                             style={{
-                              width: `${Math.round((reportData.totalSales / Math.max(reportData.totalSales, reportData.unitsThisMonth, reportData.discountsGiven, reportData.shrinkage)) * 100)}%`,
+                              width: `${Math.round((computedReportData.totalSales / Math.max(computedReportData.totalSales, computedReportData.unitsThisMonth, computedReportData.discountsGiven, computedReportData.shrinkage)) * 100)}%`,
                             }}
                           />
                         </div>
@@ -1022,12 +1096,12 @@ function Dashboard() {
                     <div className="breakdown-row">
                       <span>Units Sold</span>
                       <div className="breakdown-right">
-                        <span className="breakdown-val">{reportData.unitsThisMonth}</span>
+                        <span className="breakdown-val">{computedReportData.unitsThisMonth}</span>
                         <div className="breakdown-bar">
-                          <div
+                              <div
                             className="breakdown-fill"
                             style={{
-                              width: `${Math.round((reportData.unitsThisMonth / Math.max(reportData.totalSales, reportData.unitsThisMonth, reportData.discountsGiven, reportData.shrinkage)) * 100)}%`,
+                              width: `${Math.round((computedReportData.unitsThisMonth / Math.max(computedReportData.totalSales, computedReportData.unitsThisMonth, computedReportData.discountsGiven, computedReportData.shrinkage)) * 100)}%`,
                             }}
                           />
                         </div>
@@ -1037,12 +1111,12 @@ function Dashboard() {
                     <div className="breakdown-row">
                       <span>Discounts Given</span>
                       <div className="breakdown-right">
-                        <span className="breakdown-val">{reportData.discountsGiven}</span>
+                        <span className="breakdown-val">{computedReportData.discountsGiven}</span>
                         <div className="breakdown-bar">
-                          <div
+                              <div
                             className="breakdown-fill"
                             style={{
-                              width: `${Math.round((reportData.discountsGiven / Math.max(reportData.totalSales, reportData.unitsThisMonth, reportData.discountsGiven, reportData.shrinkage)) * 100)}%`,
+                              width: `${Math.round((computedReportData.discountsGiven / Math.max(computedReportData.totalSales, computedReportData.unitsThisMonth, computedReportData.discountsGiven, computedReportData.shrinkage)) * 100)}%`,
                             }}
                           />
                         </div>
@@ -1052,12 +1126,12 @@ function Dashboard() {
                     <div className="breakdown-row">
                       <span>Shrinkage</span>
                       <div className="breakdown-right">
-                        <span className="breakdown-val">{reportData.shrinkage} units</span>
+                        <span className="breakdown-val">{computedReportData.shrinkage} units</span>
                         <div className="breakdown-bar">
-                          <div
+                              <div
                             className="breakdown-fill"
                             style={{
-                              width: `${Math.round((reportData.shrinkage / Math.max(reportData.totalSales, reportData.unitsThisMonth, reportData.discountsGiven, reportData.shrinkage)) * 100)}%`,
+                              width: `${Math.round((computedReportData.shrinkage / Math.max(computedReportData.totalSales, computedReportData.unitsThisMonth, computedReportData.discountsGiven, computedReportData.shrinkage)) * 100)}%`,
                             }}
                           />
                         </div>
@@ -1066,7 +1140,7 @@ function Dashboard() {
 
                     <div className="avg-row">
                       <span>Average Transaction Value</span>
-                      <strong>KSh {Math.round(reportData.totalSales / 50).toLocaleString()}</strong>
+                      <strong>KSh {Math.round(computedReportData.totalSales / 50).toLocaleString()}</strong>
                     </div>
                   </div>
                 </div>
@@ -1083,10 +1157,10 @@ function Dashboard() {
 
                   {(() => {
                     const values = [
-                      { label: 'Sales', value: reportData.totalSales, color: '#7A5C3A' },
-                      { label: 'Units', value: reportData.unitsThisMonth, color: '#C8A870' },
-                      { label: 'Discounts', value: reportData.discountsGiven, color: '#3B6D11' },
-                      { label: 'Shrinkage', value: reportData.shrinkage, color: '#A32D2D' },
+                      { label: 'Sales', value: computedReportData.totalSales, color: '#7A5C3A' },
+                      { label: 'Units', value: computedReportData.unitsThisMonth, color: '#C8A870' },
+                      { label: 'Discounts', value: computedReportData.discountsGiven, color: '#3B6D11' },
+                      { label: 'Shrinkage', value: computedReportData.shrinkage, color: '#A32D2D' },
                     ]
                     const sum = values.reduce((a, b) => a + b.value, 0) || 1
                     let acc = 0
@@ -1130,7 +1204,7 @@ function Dashboard() {
                           </svg>
                           <div className="pie-center">
                             <div className="pie-center-top">Total</div>
-                            <div className="pie-center-val">KSh {reportData.totalSales.toLocaleString()}</div>
+                            <div className="pie-center-val">KSh {computedReportData.totalSales.toLocaleString()}</div>
                           </div>
                         </div>
 
@@ -1156,12 +1230,12 @@ function Dashboard() {
 
                   {(() => {
                     const points = [
-                      Math.round(reportData.totalSales * 0.85),
-                      Math.round(reportData.totalSales * 0.92),
-                      Math.round(reportData.totalSales * 1.02),
-                      Math.round(reportData.totalSales * 0.98),
-                      Math.round(reportData.totalSales * 1.12),
-                      Math.round(reportData.totalSales * 1.06),
+                      Math.round(computedReportData.totalSales * 0.85),
+                      Math.round(computedReportData.totalSales * 0.92),
+                      Math.round(computedReportData.totalSales * 1.02),
+                      Math.round(computedReportData.totalSales * 0.98),
+                      Math.round(computedReportData.totalSales * 1.12),
+                      Math.round(computedReportData.totalSales * 1.06),
                     ]
                     const max = Math.max(...points) || 1
                     const min = Math.min(...points) || 0
@@ -1215,25 +1289,25 @@ function Dashboard() {
 
               {/* Original report items (kept) */}
               <div className="report-content" style={{ marginTop: 16 }}>
-                <div className="report-item">
-                  <span>Total Revenue (This Month)</span>
-                  <strong>KSh {reportData.totalSales.toLocaleString()}</strong>
+                  <div className="report-item">
+                  <span>Total Revenue ({salesPeriod === 'weekly' ? 'This Week' : 'This Month'})</span>
+                  <strong>KSh {computedReportData.totalSales.toLocaleString()}</strong>
                 </div>
                 <div className="report-item">
                   <span>Total Units Sold</span>
-                  <strong>{reportData.unitsThisMonth}</strong>
+                  <strong>{computedReportData.unitsThisMonth}</strong>
                 </div>
                 <div className="report-item">
                   <span>Average Transaction Value</span>
-                  <strong>KSh {Math.round(reportData.totalSales / 50).toLocaleString()}</strong>
+                  <strong>KSh {Math.round(computedReportData.totalSales / 50).toLocaleString()}</strong>
                 </div>
                 <div className="report-item">
                   <span>Active Discounts</span>
-                  <strong>{reportData.discountsGiven}</strong>
+                  <strong>{computedReportData.discountsGiven}</strong>
                 </div>
                 <div className="report-item">
                   <span>Inventory Loss</span>
-                  <strong>{reportData.shrinkage} units</strong>
+                  <strong>{computedReportData.shrinkage} units</strong>
                 </div>
               </div>
             </div>
