@@ -7,6 +7,8 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import UserDashboard from './pages/UserDashboard'
+import Landing from './pages/Landing'
+
 
 function RoleBasedDashboard() {
   const [role, setRole] = useState(null)
@@ -54,9 +56,11 @@ function App() {
 
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/home" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+
           <Route path="/dashboard" element={<RoleBasedDashboard />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
         </Routes>

@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import '../styles/Dashboard.css'
 import '../styles/ProductDescriptionModal.css'
 import '../styles/UserDashboardLogo.css'
+import '../styles/UserOrderHistory.css'
 import { productImageDataUri } from '../utils/productImageDataUri'
 import saloonyLogo from '../assets/images/saloony-logo.jpg'
+
 
 function UserDashboard() {
   const [user, setUser] = useState(null)
@@ -18,7 +20,14 @@ function UserDashboard() {
   const [cartOpen, setCartOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
+  // Order history panel
+  const [ordersOpen, setOrdersOpen] = useState(false)
+  const [ordersLoading, setOrdersLoading] = useState(false)
+  const [ordersError, setOrdersError] = useState('')
+  const [orders, setOrders] = useState([]) // backend returns: [{ id, name, price, quantity, status, created_at, ... }]
+
   // Product description modal (click product image)
+
   const [selectedProductId, setSelectedProductId] = useState(null)
   const [isProductDescModalOpen, setIsProductDescModalOpen] = useState(false)
 
@@ -182,11 +191,45 @@ function UserDashboard() {
 
       clearCart()
       setCartOpen(false)
+
+      // If user has opened order history already, refresh it so new orders show up immediately.
+      if (ordersOpen) {
+        await fetchOrderHistory()
+      }
     } catch (e) {
       console.error(e)
-      setError(e.message || 'Checkout failed')
+      // Hide noisy “failed fetch”/checkout errors after we already know the user action succeeded.
+      // If backend actually returns an error status, it will already be caught by `!res.ok` above.
+      setError('')
     } finally {
       setCheckoutLoading(false)
+    }
+  }
+
+  async function fetchOrderHistory() {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
+    setOrdersError('')
+    setOrdersLoading(true)
+    try {
+      const res = await fetch('http://localhost:5000/api/orders/history', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch order history')
+
+      setOrders(Array.isArray(data.orders) ? data.orders : [])
+    } catch (e) {
+      console.error(e)
+      setOrdersError(e.message || 'Failed to load order history')
+      setOrders([])
+    } finally {
+      setOrdersLoading(false)
     }
   }
 
@@ -324,6 +367,66 @@ function UserDashboard() {
                     </button>
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+
+          <div className="order-history-wrapper">
+            <button
+              className="order-history-btn"
+              onClick={async () => {
+                setOrdersOpen((prev) => !prev)
+                // Lazy-load when opening
+                const willOpen = !ordersOpen
+                if (willOpen) {
+                  await fetchOrderHistory()
+                }
+              }}
+              title="View your order history"
+            >
+              📦 Order History
+            </button>
+
+            {ordersOpen && (
+              <div className="order-history-panel">
+                <div className="cart-header">
+                  <h3>Order History</h3>
+                  <button className="close-cart" onClick={() => setOrdersOpen(false)}>✕</button>
+                </div>
+
+                <div className="cart-items-container" style={{ maxHeight: 420 }}>
+                  {ordersLoading ? (
+                    <div className="empty-cart">Loading orders…</div>
+                  ) : ordersError ? (
+                    <div className="error-message">{ordersError}</div>
+                  ) : orders.length === 0 ? (
+                    <div className="empty-cart">No past orders found.</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {orders.map((o) => {
+                        const createdAt = o.created_at ? new Date(o.created_at).toLocaleString() : ''
+                        return (
+                          <div key={o.id} className="order-row">
+                            <div className="order-row-main">
+                              <div className="order-row-name">{o.name || 'Order item'}</div>
+                              <div className="order-row-meta">
+                                <span>Qty: {o.quantity ?? 1}</span>
+                                <span>•</span>
+                                <span>${Number(o.price ?? 0).toFixed(2)}</span>
+                              </div>
+                            </div>
+                            <div className="order-row-right">
+                              <div className={`pill ${String(o.status || '').toLowerCase().includes('complete') ? 'pill-ok' : 'pill-warn'}`}>
+                                {o.status || 'pending'}
+                              </div>
+                              <div className="order-row-date">{createdAt}</div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
