@@ -2,7 +2,7 @@ const IMAGE_FILE_MAP = [
   ['anti dandruff shampoo', 'anti dandruff shampoo.jpg'],
   ['argan oil shampoo', 'argan oil shampoo.jpg'],
   ['sulfate free shampoo', 'sulfate free shampoo.jpg'],
-  ['deep conditionin masque', 'deep conditionin masque.jpg'],
+  ['deep conditioning masque', 'deep conditioning masque.jpg'],
   ['keratin conditioner', 'keratin conditioner.jpg'],
   ['hair oil', 'hair oil.jpg'],
   ['olive oil', 'olive oil.jpg'],
@@ -11,26 +11,42 @@ const IMAGE_FILE_MAP = [
   ['treatment', 'treatment.jpg'],
   ['hair food', 'hair food.jpg'],
   ['hair extension glue', 'hair extension glue.webp'],
+  ['acrylic liquid monomer', 'acrylic liquid monomer.jpg'],
+  ['synthetic braiding hair pack', 'synthetic braiding pack.jpg'],
+
   ['artificial nail tips', 'artificial nail tips.jpg'],
   ['nail polish', 'nail polish.jpg'],
   ['nail glue', 'nail glue.jpg'],
-  ['nail buffer', 'nail buffer.jpg'],
-  ['acrylic liquid monomer', 'acrylic liquid monomer.jpg'],
-  ['lipstick', 'lipstick.jpg'],
-  ['lip gloss', 'lip gloss.jpg'],
-  ['mascara', 'mascara.jpg'],
-  ['eye liner', 'eye liner.jpg'],
-  ['eye shaddow liner', 'eye shaddow liner.jpg'],
-  ['foundation', 'foundation.jpg'],
-  ['concealer', 'concealer.jpg'],
-  ['blusher', 'blusher.jpg'],
-  ['face wash', 'face wash.webp'],
-  ['facial cleanser', 'facial cleanser.jpg'],
-  ['face scrub', 'face scrub.webp'],
-  ['clay face mask', 'clay face mask.jpg'],
+  ['nail file buffer', 'nail file buffer.jpg'],
+  ['setting lotion', 'setting lotion.jpg'],
+  ['acrylic powder', 'acrylic powder.jpg'],
+  ['cuticle oil', 'cuticle oil.jpg'],
+  ['hair relaxer kit', 'hair relaxer.jpg'],
+  ['hair dye tube', 'hair dye tube.jpg'],
+  ['hair bleach powder', 'hair bleach.jpg'],
+  ['hairbleach powder', 'hair bleach.jpg'],
+  ['hair bleach', 'hair bleach.jpg'],
+  ['hydrogen peroxide developer', 'hydrogen peroxide developer.jpg'],
+  ['edge control gel', 'edge control gel.jpg'],
+  ['hair serum', 'hair serum.jpg'],
+  ['hair spray', 'Hair Spray.jpg'],
+  ['gel polish bottle', 'gel polish bottle.jpg'],
+  ['body lotion', 'body lotion.jpg'],
+  ['facial scrub', 'face scrub.webp'],
+  ['facial scrub', 'face scrub.webp'],
+  ['setting powder', 'download (20).jpg'],
+  ['eyes hagow pallete', 'eye shaddow pallete.jpg'],
+  ['eyes haddow pallete', 'eye shaddow pallete.jpg'],
+  ['eyes haddow palette', 'eye shaddow pallete.jpg'],
+  ['eye shaddow pallete', 'eye shaddow pallete.jpg'],
+  ['eye shaddow palette', 'eye shaddow pallete.jpg'],
+  ['eyeliner pencil', 'eyeliner pencil.jpg'],
+  ['makeup setting spray', 'makeup setting spray.jpg'],
+  ['makeup setting spray', 'makeup setting spray.jpg'],
+  ['body lotion', 'body lotion.jpg'],
+  ['body oil', 'body oil.webp'],
   ['toner', 'toner.jpg'],
   ['moisturizing lotion', 'moisturizing lotion.webp'],
-  ['body oil', 'body oil.webp'],
   ['petroleum jelly', 'Petroleum jelly.webp'],
   ['sunscreen', 'Sunscreen.jpg'],
   ['bleaching cream', 'bleaching cream.jpg'],
@@ -38,9 +54,21 @@ const IMAGE_FILE_MAP = [
   ['human hair weave', 'human hair weave.jpg'],
   ['human hair wig', 'human hair wig.webp'],
   ['synthetic wig', 'synthetic wig.jpg'],
+  ['foundation', 'foundation.jpg'],
+  ['concealer', 'concealer.jpg'],
+  ['blusher', 'blusher.jpg'],
+  ['face wash', 'face wash.webp'],
+  ['facial cleanser', 'facial cleanser.jpg'],
+  ['face scrub', 'face scrub.webp'],
+  ['clay face mask', 'clay face mask.jpg'],
+  ['mascara', 'mascara.jpg'],
+  ['eye liner', 'eye liner.jpg'],
+  ['eye shaddow liner', 'eye shaddow liner.jpg'],
+  ['lion', 'download.avif'],
+  ['lipstick', 'lipstick.jpg'],
+  ['lip gloss', 'lip gloss.jpg'],
 ]
 
-// Generic fallback images for products without specific matches
 const GENERIC_IMAGES = [
   'download (1).avif',
   'download (20).jpg',
@@ -54,6 +82,7 @@ const GENERIC_IMAGES = [
   'images (8).jpg',
   'images.jpg',
 ]
+
 
 function getImageUrl(fileName) {
   try {
@@ -95,6 +124,9 @@ function findKnownImageUrl(rawName, normalizedName) {
 
   return null
 }
+
+
+
 
 /**
  * Tries to map a product to a real image in `frontend/src/assets/images`.

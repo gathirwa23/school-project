@@ -300,7 +300,8 @@ function UserDashboard() {
                         <div key={item.productId} className="cart-item">
                           <div className="cart-item-details">
                             <div className="cart-item-name">{item.product}</div>
-                            <div className="cart-item-price">${Number(item.price).toFixed(2)}</div>
+                            <div className="cart-item-price">{Number(item.price).toFixed(2)}</div>
+
                           </div>
                           <div className="cart-item-quantity">
                             <button
@@ -336,8 +337,10 @@ function UserDashboard() {
                             </button>
                           </div>
                           <div className="cart-item-total">
-                            ${(Number(item.price) * Number(item.quantity)).toFixed(2)}
+                            {(Number(item.price) * Number(item.quantity)).toFixed(2)}
+
                           </div>
+
                         </div>
                       ))}
                     </>
@@ -348,7 +351,8 @@ function UserDashboard() {
                   <div className="cart-footer">
                     <div className="cart-total">
                       <span>Total:</span>
-                      <span className="total-amount">${cartTotal.toFixed(2)}</span>
+                      <span className="total-amount">{cartTotal.toFixed(2)}</span>
+
                     </div>
                     {error && <div className="error-message">{error}</div>}
                     <button
@@ -412,7 +416,8 @@ function UserDashboard() {
                               <div className="order-row-meta">
                                 <span>Qty: {o.quantity ?? 1}</span>
                                 <span>•</span>
-                                <span>${Number(o.price ?? 0).toFixed(2)}</span>
+                                <span>{Number(o.price ?? 0).toFixed(2)}</span>
+
                               </div>
                             </div>
                             <div className="order-row-right">
@@ -492,7 +497,8 @@ function UserDashboard() {
 
                 <div className="product-desc-meta">
                   <div className="product-desc-meta-item">
-                    ${Number(selectedProduct.price).toFixed(2)}
+                    {Number(selectedProduct.price).toFixed(2)}
+
                   </div>
                   <div className="product-desc-meta-item">
                     Status: {selectedProduct.status || 'Unknown'}
@@ -537,7 +543,8 @@ function UserDashboard() {
                 <h3 className="product-name">{item.product}</h3>
                 <p className="product-description">{item.description || ''}</p>
                 <div className="product-details">
-                  <span className="product-price">${Number(item.price).toFixed(2)}</span>
+                  <span className="product-price">{Number(item.price).toFixed(2)}</span>
+
                   <span
                     className={`product-status ${item.status ? item.status.toLowerCase() : 'unknown'}`}
                   >

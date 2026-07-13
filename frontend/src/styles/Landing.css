@@ -4,13 +4,17 @@
   color:#2b2b2b;
 }
 
-.landing-hero{ 
+.landing-hero{
   position: relative;
-  padding: 48px 20px 20px;
+  padding: 84px 20px 50px;
+  min-height: 74vh;
+
   /* hero background image is set from Landing.jsx to ensure Vite bundles it correctly */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
+
   color: #24170f;
 }
 
@@ -58,10 +62,152 @@
 .landing-section h2{font-size:20px;margin-bottom:10px;}
 .landing-section p{color:#4b3f35;line-height:1.7;margin-top:8px;}
 
+/* About section */
+.landing-about-section{
+  padding: 30px 22px;
+  min-height: 420px;
+}
+
+.landing-about-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: center;
+  height: 100%;
+}
+
+.landing-about-imageWrap{
+  height: 100%;
+  min-height: 360px;
+}
+
+.landing-about-image{
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid rgba(237,224,206,0.95);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+}
+
+.landing-about-content{
+  padding: 8px 6px;
+}
+
+.landing-about-content p{margin-top:10px;}
+
+@media (max-width: 900px){
+  .landing-about-section{min-height:auto;}
+  .landing-about-grid{grid-template-columns:1fr;}
+  .landing-about-imageWrap,.landing-about-image{min-height: 240px;}
+}
+
+
 .landing-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px;}
 @media (max-width: 900px){.landing-cards{grid-template-columns:1fr;}}
 
-.landing-card{background: white;border-radius:16px;padding:16px;border:1px solid rgba(237,224,206,0.95)}
+.landing-services-layout{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 14px;
+  align-items:start;
+}
+
+.landing-services-left{
+  min-width: 0;
+}
+
+.landing-services-u-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 10px;
+  align-items: stretch;
+  position: relative;
+}
+
+/* U-shape: two cards on top (left/right) and one card centered below */
+.landing-card-u-left{grid-column: 1; grid-row: 1;}
+.landing-card-u-right{grid-column: 2; grid-row: 1;}
+.landing-card-u-bottom{grid-column: 1 / span 2; grid-row: 2; width: min(520px, 100%); justify-self: center;}
+
+/* Image on the right */
+.landing-services-imageWrap{
+  display:flex;
+  justify-content:center;
+  padding-top: 6px;
+}
+
+.landing-services-image{
+  width: min(520px, 100%);
+  height: auto;
+  object-fit: cover;
+  border-radius: 9999px;
+  border:1px solid rgba(237,224,206,0.95);
+}
+
+/* Make the text feel like it touches/borders the image */
+.landing-services-layout{
+  position: relative;
+}
+
+.landing-services-left .landing-card{
+  background: transparent;
+}
+
+.landing-services-left{
+  padding-right: 6px; /* reduces the visual gap to the image */
+}
+
+.landing-services-layout > .landing-services-imageWrap{
+  padding-left: 0px;
+}
+
+@media (max-width: 900px){
+  .landing-services-layout{
+    grid-template-columns: 1fr;
+  }
+  .landing-services-u-grid{grid-template-columns:1fr;}
+  .landing-card-u-bottom{grid-column: 1; width: 100%;}
+  .landing-services-left{padding-right: 0;}
+  .landing-services-imageWrap{padding-top: 0;}
+}
+
+.landing-services-subgrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin-top:14px;
+}
+
+
+.landing-locations-block h3{
+  margin: 6px 0 4px;
+  font-size: 18px;
+  color:#24170f;
+}
+
+.landing-locations-block{
+  margin-top: 18px;
+}
+
+
+@media (max-width: 900px){
+  .landing-services-subgrid{grid-template-columns:1fr;}
+}
+
+
+.landing-card{background: transparent;border-radius:16px;padding:16px;border:none}
+
+/* “Services offered” cards should not have a surrounding box */
+.landing-services-u-grid .landing-card{
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
 .landing-card-icon{font-size:26px}
 .landing-card h3{margin:10px 0 8px;font-size:16px}
 .landing-card p{margin:0;color:#5a4e45}
@@ -72,6 +218,87 @@
 .landing-testimonial{background:white;border:1px solid rgba(237,224,206,0.95);border-radius:16px;padding:16px}
 .quote{font-size:15px;line-height:1.7;margin:0;color:#4b3f35;font-weight:600}
 .who{margin-top:12px;color:#6a5a4b;font-weight:700}
+
+.landing-contact{
+  padding: 10px 20px 18px;
+}
+
+.landing-contact-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.landing-contact-title{
+  font-size: 20px;
+  margin: 10px 0 12px;
+  color: #24170f;
+}
+
+.landing-contact-cards{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.landing-contact-card{
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(237,224,206,0.95);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.landing-contact-card-heading{
+  font-weight: 800;
+  color: #24170f;
+  margin-bottom: 10px;
+}
+
+.landing-contact-links{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.landing-contact-links a{
+  color: #3B6D11;
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.landing-social-icon{
+  font-size: 18px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #3B6D11;
+}
+
+
+
+.landing-contact-links a:hover{
+  text-decoration: underline;
+}
+
+.landing-contact-muted{
+  margin-top: 4px;
+  color: #6a5a4b;
+  font-weight: 700;
+}
+
+.landing-contact-address{
+  color: #4b3f35;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+@media (max-width: 900px){
+  .landing-contact-cards{grid-template-columns: 1fr;}
+}
 
 .landing-footer{padding: 10px 20px 28px;}
 .landing-footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#6a5a4b}
