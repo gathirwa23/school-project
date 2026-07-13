@@ -8,9 +8,13 @@ import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import UserDashboard from './pages/UserDashboard'
 import Landing from './pages/Landing'
+import BlogNews from './pages/BlogNews'
+import TermsAndConditions from './pages/TermsAndConditions'
+import FAQs from './pages/FAQs'
 
 
 function RoleBasedDashboard() {
+
   const [role, setRole] = useState(null)
 
   useEffect(() => {
@@ -58,8 +62,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/home" element={<Landing />} />
+          <Route path="/blog" element={<BlogNews />} />
+          <Route path="/terms-conditions" element={<TermsAndConditions />} />
+          <Route path="/faqs" element={<FAQs />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+
 
           <Route path="/dashboard" element={<RoleBasedDashboard />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />

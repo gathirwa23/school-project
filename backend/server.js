@@ -68,6 +68,16 @@ app.post('/api/signup', async (req, res) => {
 
     if (insertError) throw insertError
 
+    // Send confirmation email (do not fail signup if email sending fails)
+    try {
+      console.log(`[signup] sending confirmation email to=${email}`)
+      await sendSignupConfirmationEmail({ toEmail: email, toName: name })
+      console.log(`[signup] confirmation email send attempt complete for=${email}`)
+    } catch (emailErr) {
+      console.warn('[signup] confirmation email failed:', emailErr?.message || emailErr)
+    }
+
+
     const token = jwt.sign({ id: userId, email, role: role || 'user' }, JWT_SECRET, { expiresIn: '7d' })
     res.status(201).json({
       token,
@@ -107,6 +117,7 @@ app.post('/api/login', async (req, res) => {
 })
 
 const authMiddleware = require('./middleware/authMiddleware')
+const { sendSignupConfirmationEmail } = require('./utils/sendSignupConfirmationEmail')
 
 app.get('/api/me', authMiddleware, async (req, res) => {
   try {

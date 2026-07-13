@@ -100,7 +100,13 @@ Authorization: Bearer <token>
 
 ## Notes
 
-- Users are stored in `backend/users.json`
+- Users are stored in Supabase `users` table
 - Passwords are hashed using bcryptjs
 - Tokens expire after 7 days
 - The JWT secret is hardcoded for dev (change in production!)
+
+## Signup confirmation email
+On successful `POST /api/signup`, the backend attempts to send a confirmation email using Nodemailer.
+
+See `backend/.env.example` for required SMTP variables.
+

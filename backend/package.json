@@ -12,7 +12,7 @@
     "seed:products": "node seedProducts.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "data:import": "node backend/seedProducts.js",
-  "data:destroy": "node backend/seedProducts.js -d"
+    "data:destroy": "node backend/seedProducts.js -d"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
@@ -21,6 +21,7 @@
     "dotenv": "^16.0.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.0",
+    "nodemailer": "^6.9.14",
     "nodemon": "^3.1.14"
   }
 }
