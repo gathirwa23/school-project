@@ -85,7 +85,7 @@ function Dashboard() {
 
     async function fetchUser() {
       try {
-        const res = await fetch('http://localhost:5000/api/me', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) throw new Error('Failed to fetch user')
@@ -116,7 +116,7 @@ function Dashboard() {
 
     async function fetchNotifications() {
       try {
-        const res = await fetch('http://localhost:5000/api/notifications/discounts', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/notifications/discounts`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) return
@@ -132,7 +132,7 @@ function Dashboard() {
     async function fetchInventory() {
 
       try {
-        const res = await fetch('http://localhost:5000/api/inventory', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventory`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) throw new Error('Failed to fetch inventory')
@@ -683,7 +683,7 @@ function Dashboard() {
 
                             try {
                               const nextStock = Number(item.stock)
-                              const res = await fetch(`http://localhost:5000/api/inventory/${item.id}`, {
+                              const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventory/${item.id}`, {
                                 method: 'PATCH',
                                 headers: {
                                   Authorization: `Bearer ${token}`,

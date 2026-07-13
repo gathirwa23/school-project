@@ -29,7 +29,7 @@ function Signup() {
     setLoading(true)
 
     try {
-      const res = await fetch('http://localhost:5000/api/signup', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role }),

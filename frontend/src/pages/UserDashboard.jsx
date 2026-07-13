@@ -56,9 +56,10 @@ function UserDashboard() {
 
     async function fetchUser() {
       try {
-        const res = await fetch('http://localhost:5000/api/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
         if (!res.ok) throw new Error('Failed to fetch user')
         const data = await res.json()
         setUser(data)
@@ -74,9 +75,10 @@ function UserDashboard() {
 
     async function fetchInventory() {
       try {
-        const invRes = await fetch('http://localhost:5000/api/inventory', {
+        const invRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventory`, {
           headers: { Authorization: `Bearer ${token}` },
         })
+
         if (!invRes.ok) throw new Error('Failed to fetch inventory')
         const invData = await invRes.json()
         setInventoryItems(invData.items || [])
@@ -166,7 +168,7 @@ function UserDashboard() {
     setError('')
     setCheckoutLoading(true)
     try {
-      const res = await fetch('http://localhost:5000/api/orders/checkout', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/checkout`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -181,7 +183,8 @@ function UserDashboard() {
       if (!res.ok) throw new Error(data.message || 'Checkout failed')
 
       // Refresh inventory
-      const invRes = await fetch('http://localhost:5000/api/inventory', {
+      const invRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventory`, {
+
         headers: { Authorization: `Bearer ${token}` },
       })
       if (invRes.ok) {
@@ -216,7 +219,8 @@ function UserDashboard() {
     setOrdersError('')
     setOrdersLoading(true)
     try {
-      const res = await fetch('http://localhost:5000/api/orders/history', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/history`, {
+
         headers: { Authorization: `Bearer ${token}` },
       })
 

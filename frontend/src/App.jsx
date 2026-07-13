@@ -23,7 +23,8 @@ function RoleBasedDashboard() {
 
     async function loadMe() {
       try {
-        const res = await fetch('http://localhost:5000/api/me', {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
+
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) throw new Error('Failed to fetch user')
