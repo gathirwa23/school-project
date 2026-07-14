@@ -1,5 +1,14 @@
 const nodemailer = require('nodemailer')
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 /**
  * Sends a signup confirmation email.
  *
@@ -60,11 +69,14 @@ async function sendSignupConfirmationEmail({ toEmail, toName }) {
     },
   })
 
-  const namePart = toName ? `, ${toName}` : ''
+  const safeNameForText = toName ? String(toName) : ''
+  const safeNameForHtml = toName ? escapeHtml(toName) : ''
+  const safeNamePartForText = safeNameForText ? `, ${safeNameForText}` : ''
+  const safeNamePartForHtml = safeNameForHtml ? `, ${safeNameForHtml}` : ''
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.4;">
-      <h2 style="margin: 0 0 12px 0;">Welcome${namePart}!</h2>
+      <h2 style="margin: 0 0 12px 0;">Welcome${safeNamePartForHtml}!</h2>
       <p style="margin: 0 0 12px 0;">
         Your account has been created successfully. You can now log in and start using the app.
       </p>
@@ -78,7 +90,7 @@ async function sendSignupConfirmationEmail({ toEmail, toName }) {
     from: SMTP_FROM,
     to: toEmail,
     subject: 'Your account was created',
-    text: `Welcome${namePart}! Your account has been created successfully. You can now log in and start using the app.`,
+    text: `Welcome${safeNamePartForText}! Your account has been created successfully. You can now log in and start using the app.`,
     html,
   })
 }
