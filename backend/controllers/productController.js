@@ -84,22 +84,24 @@ async function updateInventoryStock(req, res) {
       return res.status(400).json({ message: 'Invalid stock' })
     }
 
-    // Update stock only; client will recompute status.
+    // Source of truth for dashboard/user inventory is `products.stock`.
+    // Persist stock updates there so subsequent GET /api/inventory reflects changes.
     const { data, error } = await supabase
-      .from('inventory')
+      .from('products')
       .update({ stock: stockNum })
       .eq('id', id)
-      .select('id, product, stock, price')
+      .select('id, name, product, stock, price')
 
     if (error) throw error
-    if (!data || !data.length) return res.status(404).json({ message: 'Inventory item not found' })
+    if (!data || !data.length) return res.status(404).json({ message: 'Product not found' })
 
+    const updated = data[0]
     return res.json({
       item: {
-        id: data[0].id,
-        product: data[0].product,
+        id: updated.id,
+        product: updated.name ?? updated.product,
         stock: stockNum,
-        price: data[0].price,
+        price: updated.price,
       },
     })
   } catch (err) {
