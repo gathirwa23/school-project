@@ -694,7 +694,7 @@ function Dashboard() {
 
                               if (!res.ok) throw new Error('Failed to update stock')
 
-                              const invRes = await fetch('http://localhost:5000/api/inventory', {
+                              const invRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/inventory`, {
                                 headers: { Authorization: `Bearer ${token}` },
                               })
                               if (!invRes.ok) throw new Error('Failed to refresh inventory')
@@ -702,6 +702,7 @@ function Dashboard() {
                               const items = invData.items || []
                               setInventoryItems(items)
                               setFilteredInventory(items)
+
                             } catch (e2) {
                               console.error(e2)
                             }
