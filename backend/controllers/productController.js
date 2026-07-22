@@ -1,4 +1,4 @@
- const { supabase } = require('../config/db')
+ const { supabase, supabaseAdmin } = require('../config/db')
 const { getDefaultProducts } = require('../legacy/productsFallback')
 const { normalizeProducts } = require('../models/Product')
 
@@ -86,7 +86,8 @@ async function updateInventoryStock(req, res) {
 
     // Source of truth for dashboard/user inventory is `products.stock`.
     // Persist stock updates there so subsequent GET /api/inventory reflects changes.
-    const { data, error } = await supabase
+    // Use service-role client to bypass RLS on products table.
+    const { data, error } = await supabaseAdmin
       .from('products')
       .update({ stock: stockNum })
       .eq('id', id)
